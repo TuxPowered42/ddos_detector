@@ -26,3 +26,7 @@ _testmain.go
 # vim
 .*.swp
 .*.swo
+
+# Ignore binary, should it be in src dir
+ddos_detector
+
