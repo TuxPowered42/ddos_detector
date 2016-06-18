@@ -1,0 +1,4 @@
+[sflowconfig]
+address = "::"
+port = 6343
+
