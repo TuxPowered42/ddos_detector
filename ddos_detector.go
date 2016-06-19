@@ -49,22 +49,26 @@ func KillSignal(Running *bool) {
 
 }
 
-func MainLoop(AppState *app_state, AppConfig *app_config) {
+func MainLoop(AppState *app_state, AppConfig *app_config, TrafficData *traffic_data) {
 	AppState.Running = true
 
 	AppState.Wait.Add(1)
 	go sFlowListener(AppState, AppConfig.SFlowConfig)
+
+	AppState.Wait.Add(1)
+	go CountersRotator(AppState, TrafficData)
 
 	AppState.Wait.Wait()
 }
 
 func main() {
 	var (
-		configFile string
-		withDebug  bool
-		AppState   app_state
-		AppConfig  app_config
-		err        error
+		configFile  string
+		withDebug   bool
+		AppState    app_state
+		AppConfig   app_config
+		TrafficData traffic_data
+		err         error
 	)
 
 	flag.StringVar(&configFile, "c", "/etc/ddos_detector.toml", "Path to configuration file.")
@@ -80,7 +84,7 @@ func main() {
 	}
 
 	KillSignal(&AppState.Running)
-	MainLoop(&AppState, &AppConfig)
+	MainLoop(&AppState, &AppConfig, &TrafficData)
 
 	InfoLogger.Println("DDoS Detector finished.")
 }
