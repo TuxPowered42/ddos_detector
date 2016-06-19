@@ -11,12 +11,15 @@ import (
 	"syscall"
 )
 
+type app_state struct {
+	Wait    sync.WaitGroup
+	Running bool
+}
+
 var (
 	InfoLogger  *log.Logger
 	ErrorLogger *log.Logger
 	DebugLogger *log.Logger
-	wait        sync.WaitGroup
-	running     bool
 )
 
 func InitLogging(WithDebug bool) {
@@ -33,31 +36,33 @@ func InitLogging(WithDebug bool) {
 
 }
 
-func KillSignal() {
+func KillSignal(Running *bool) {
 	SignalChannel := make(chan os.Signal, 1)
 	signal.Notify(SignalChannel, syscall.SIGINT, syscall.SIGTERM)
+
 	go func() {
 		<-SignalChannel
 		InfoLogger.Println("Got SIGTERM, finishing work gracefully.")
-		running = false
+		*Running = false
 		signal.Reset() // Next ctrl+c will effect in ungraceful stop
 	}()
 
 }
 
-func MainLoop(AppConfig app_config) {
-	running = true
+func MainLoop(AppConfig app_config, AppState *app_state) {
+	AppState.Running = true
 
-	wait.Add(1)
-	go sFlowListener(AppConfig)
+	AppState.Wait.Add(1)
+	go sFlowListener(AppConfig, AppState)
 
-	wait.Wait()
+	AppState.Wait.Wait()
 }
 
 func main() {
 	var configFile string
 	var withDebug bool
 	var AppConfig app_config
+	var AppState app_state
 
 	flag.StringVar(&configFile, "c", "/etc/ddos_detector.toml", "Path to configuration file.")
 	flag.BoolVar(&withDebug, "v", false, "Be verbose, show debugging output.")
@@ -70,8 +75,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	KillSignal()
-	MainLoop(AppConfig)
+	KillSignal(&AppState.Running)
+	MainLoop(AppConfig, &AppState)
 
 	InfoLogger.Println("DDoS Detector finished.")
 }

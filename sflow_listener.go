@@ -21,8 +21,8 @@ func sFlowParser(buffer []byte) {
 	}
 }
 
-func sFlowListener(AppConfig app_config) (err error) {
-	defer wait.Done()
+func sFlowListener(AppConfig app_config, AppState *app_state) (err error) {
+	defer AppState.Wait.Done()
 
 	var udp_addr = fmt.Sprintf("[%s]:%d", AppConfig.SFlowConfig.Address, AppConfig.SFlowConfig.Port)
 
@@ -40,7 +40,7 @@ func sFlowListener(AppConfig app_config) (err error) {
 	}
 
 	var buffer []byte
-	for running {
+	for AppState.Running {
 		/*
 		  Normally read would block, but we want to be able to break this
 		  loop gracefuly. So add read timeout and every 0.1s check if it is
