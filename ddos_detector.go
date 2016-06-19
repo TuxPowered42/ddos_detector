@@ -59,10 +59,12 @@ func MainLoop(AppConfig app_config, AppState *app_state) {
 }
 
 func main() {
-	var configFile string
-	var withDebug bool
-	var AppConfig app_config
-	var AppState app_state
+	var (
+		configFile string
+		withDebug  bool
+		AppConfig  app_config
+		AppState   app_state
+	)
 
 	flag.StringVar(&configFile, "c", "/etc/ddos_detector.toml", "Path to configuration file.")
 	flag.BoolVar(&withDebug, "v", false, "Be verbose, show debugging output.")
