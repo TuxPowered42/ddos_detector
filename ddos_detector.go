@@ -49,11 +49,11 @@ func KillSignal(Running *bool) {
 
 }
 
-func MainLoop(AppConfig app_config, AppState *app_state) {
+func MainLoop(AppState *app_state, AppConfig app_config) {
 	AppState.Running = true
 
 	AppState.Wait.Add(1)
-	go sFlowListener(AppConfig.SFlowConfig, AppState)
+	go sFlowListener(AppState, AppConfig.SFlowConfig)
 
 	AppState.Wait.Wait()
 }
@@ -80,7 +80,7 @@ func main() {
 	}
 
 	KillSignal(&AppState.Running)
-	MainLoop(AppConfig, &AppState)
+	MainLoop(&AppState, AppConfig)
 
 	InfoLogger.Println("DDoS Detector finished.")
 }

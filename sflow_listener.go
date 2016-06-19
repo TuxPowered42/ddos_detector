@@ -21,7 +21,7 @@ func sFlowParser(buffer []byte) {
 	}
 }
 
-func sFlowListener(SFlowConfig sflow_config, AppState *app_state) (err error) {
+func sFlowListener(AppState *app_state, SFlowConfig sflow_config) (err error) {
 	defer AppState.Wait.Done()
 
 	var udp_addr = fmt.Sprintf("[%s]:%d", SFlowConfig.Address, SFlowConfig.Port)
