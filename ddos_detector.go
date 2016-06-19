@@ -53,7 +53,7 @@ func MainLoop(AppConfig app_config, AppState *app_state) {
 	AppState.Running = true
 
 	AppState.Wait.Add(1)
-	go sFlowListener(AppConfig, AppState)
+	go sFlowListener(AppConfig.SFlowConfig, AppState)
 
 	AppState.Wait.Wait()
 }
@@ -62,8 +62,9 @@ func main() {
 	var (
 		configFile string
 		withDebug  bool
-		AppConfig  app_config
 		AppState   app_state
+		AppConfig  app_config
+		err        error
 	)
 
 	flag.StringVar(&configFile, "c", "/etc/ddos_detector.toml", "Path to configuration file.")
@@ -73,7 +74,8 @@ func main() {
 	InitLogging(withDebug)
 	InfoLogger.Println("Starting DDoS Detector.")
 
-	if !ReadConfig(configFile, &AppConfig) {
+	AppConfig, err = ReadConfig(configFile)
+	if err != nil {
 		os.Exit(1)
 	}
 

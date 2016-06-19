@@ -13,11 +13,12 @@ type app_config struct {
 	SFlowConfig sflow_config
 }
 
-func ReadConfig(configFile string, AppConfig *app_config) bool {
-	if _, err := toml.DecodeFile(configFile, AppConfig); err != nil {
+func ReadConfig(configFile string) (app_config, error) {
+	var AppConfig app_config
+	if _, err := toml.DecodeFile(configFile, &AppConfig); err != nil {
 		ErrorLogger.Println("Unable to read config file!")
 		ErrorLogger.Println(err)
-		return false
+		return AppConfig, err
 	}
-	return true
+	return AppConfig, nil
 }
