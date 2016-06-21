@@ -55,8 +55,8 @@ func MainLoop(AppState *app_state, AppConfig *app_config, TrafficData *traffic_d
 	AppState.Wait.Add(1)
 	go sFlowListener(AppState, AppConfig.SFlowConfig)
 
-	AppState.Wait.Add(1)
-	go CountersRotator(AppState, TrafficData)
+	PeriodicJob(1, CountersRotator, AppState, AppConfig, TrafficData)
+	PeriodicJob(15, GraphiteSender, AppState, AppConfig, TrafficData)
 
 	AppState.Wait.Wait()
 }

@@ -1,9 +1,5 @@
 package main
 
-import (
-	"time"
-)
-
 type traffic_point struct {
 	BytesPerSecond      int
 	AllPacketsPerSecond int
@@ -19,22 +15,6 @@ type traffic_data struct {
 	HostTrraffic map[[16]byte]host_traffic
 }
 
-func _CountersRotator(AppState *app_state, TrafficData *traffic_data) {
+func CountersRotator(AppState *app_state, AppConfig *app_config, TrafficData *traffic_data) {
 	DebugLogger.Println("Rotating stuff")
-}
-
-func CountersRotator(AppState *app_state, TrafficData *traffic_data) {
-	ticker := time.NewTicker(1 * time.Second)
-
-	go func() {
-		DebugLogger.Println("CounterRotator starting")
-		defer AppState.Wait.Done()
-		for AppState.Running {
-			select {
-			case <-ticker.C:
-				_CountersRotator(AppState, TrafficData)
-			}
-		}
-		DebugLogger.Println("CounterRotator finished")
-	}()
 }
